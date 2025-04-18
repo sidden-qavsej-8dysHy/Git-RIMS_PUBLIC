@@ -1,20 +1,9 @@
 
 #$localUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1] -replace '\.HOMELAB$', ''
 
-$localUser - $env:USERNAME
+$localUser = $env:USERNAME
 
-$rimsnetworkPath = "\\homelab.local\homelab-public\user\$localUser.HOMELAB\"
-
-write-host "The logged on Local user is1: $localUser" -ForegroundColor Green
-
-if (Test-Path -Path $rimsnetworkPath) {
-    Get-ChildItem -Path $rimsnetworkPath | ForEach-Object {
-        Write-Host $_.Name -ForegroundColor Cyan
-    }
-} else {
-    Write-Host "The path $rimsnetworkPath does not exist or is inaccessible2." -ForegroundColor Red
-}
-
+#$rimsnetworkPath = "\\homelab.local\homelab-public\user\$localUser.HOMELAB\"
 
 $userProfilePath = "C:\Users\$localUser.HOMELAB"
 
