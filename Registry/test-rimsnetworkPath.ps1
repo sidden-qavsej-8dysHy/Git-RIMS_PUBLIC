@@ -1,19 +1,14 @@
 
+$localUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1]
 
-$rimsnetworkPath = "\\homelab.local\homelab-public\user\%USERNAME%\"
+$rimsnetworkPath = "\\homelab.local\homelab-public\user\$localUser\"
 
-$localUser = $env:USERNAME
-write-host "Local user: $localUser" -ForegroundColor Green
+write-host "The logged on Local user is: $localUser" -ForegroundColor Green
 
-if ($rimsnetworkPath -like "*$localUser*") {
-    Write-Output "The username '$localUser' was found in the network path."
-    $userFolderContents = Get-ChildItem -Path $rimsnetworkPath -ErrorAction SilentlyContinue
-    if ($userFolderContents) {
-        Write-Output "Contents of the user folder:"
-        $userFolderContents | ForEach-Object { Write-Output $_.Name }
-    } else {
-        Write-Output "Unable to retrieve the contents of the user folder. The path might not exist or is inaccessible."
+if (Test-Path -Path $rimsnetworkPath) {
+    Get-ChildItem -Path $rimsnetworkPath | ForEach-Object {
+        Write-Host $_.Name -ForegroundColor Cyan
     }
 } else {
-    Write-Output "The username '$localUser' was not found in the network path."
+    Write-Host "The path $rimsnetworkPath does not exist or is inaccessible." -ForegroundColor Red
 }
