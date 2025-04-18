@@ -28,9 +28,9 @@ foreach ($drive in $localDrives) {
         # Display the content of the RIMS.ID file
         try {
             $fileContent = Get-Content -Path $filePath.FullName -ErrorAction Stop
-            Write-Host "Filename '${rimsID}' contains TerminalNUmber:" $fileContent
+            Write-Host "Filename '${rimsID}' contains TerminalNUmber:" $fileContent -ForegroundColor Yellow
         } catch {
-            Write-Host "Failed to read the content of $rimsID. Error: $_"
+            Write-Host "Failed to read the content of $rimsID. Error: $_" -ForegroundColor Yellow
         }
         break
     }
