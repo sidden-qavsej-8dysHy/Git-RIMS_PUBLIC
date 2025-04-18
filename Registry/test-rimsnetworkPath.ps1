@@ -1,58 +1,34 @@
-
-#$localUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1] -replace '\.HOMELAB$', ''
 <#
-$localUser = $env:USERNAME
+.SYNOPSIS
+Searches for a file named "RIMS.ID" in various predefined locations.
 
-$rimsnetworkPath = "\\homelab.local\homelab-public\user\$localUser.HOMELAB\"
+.DESCRIPTION
+This script attempts to locate a file named "RIMS.ID" by searching in the following order:
+1. A network path specific to the current user.
+2. The local user profile directory.
+3. The root directory of the C: drive.
 
-if (Test-Path -Path $userProfilePath) {
-    Write-Host "The user profile path exists: $userProfilePath3" -ForegroundColor Green
-    $rimsIdFile = Get-ChildItem -Path $userProfilePath -Filter "RIMS.ID" -Recurse -ErrorAction SilentlyContinue
-    if ($rimsIdFile) {
-        Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
-    } else {
-        Write-Host "RIMS.ID file not found in the user profile path." -ForegroundColor Yellow
-    }
-    Write-Host "Local User: $localUser" -ForegroundColor Magenta
-    Write-Host "RIMS Network Path: $rimsnetworkPath" -ForegroundColor Magenta
-} else {
-    Write-Host "The user profile path $userProfilePath does not exist.4" -ForegroundColor Red
-}
-#>
+If the file is found, its full path is displayed, and its content is read and output to the console. 
+If the file is not found in one location, the script proceeds to search in the next location.
 
-<#
-class RimsNetworkPathChecker {
-    [string]$LocalUser
-    [string]$RimsNetworkPath
-    [string]$UserProfilePath
+.OUTPUTS
+- Writes the full path of the located "RIMS.ID" file to the console.
+- Outputs the content of the "RIMS.ID" file if found.
+- Displays appropriate messages indicating the search status.
 
-    RimsNetworkPathChecker([string]$userProfilePath) {
-        $this.LocalUser = $env:USERNAME
-        $this.RimsNetworkPath = "\\homelab.local\homelab-public\user\$($this.LocalUser).HOMELAB\"
-        $this.UserProfilePath = $userProfilePath
-    }
+.NOTES
+- The script uses the `$env:USERNAME` environment variable to determine the current user's name.
+- The network path is constructed using the current user's name and a predefined network share.
 
-    [void]CheckPath() {
-        if (Test-Path -Path $this.UserProfilePath) {
-            Write-Host "The user profile path exists: $($this.UserProfilePath)" -ForegroundColor Green
-            $rimsIdFile = Get-ChildItem -Path $this.UserProfilePath -Filter "RIMS.ID" -Recurse -ErrorAction SilentlyContinue
-            if ($rimsIdFile) {
-                Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
-            } else {
-                Write-Host "RIMS.ID file not found in the user profile path." -ForegroundColor Yellow
-            }
-            Write-Host "Local User: $($this.LocalUser)" -ForegroundColor Magenta
-            Write-Host "RIMS Network Path: $($this.RimsNetworkPath)" -ForegroundColor Magenta
-        } else {
-            Write-Host "The user profile path $($this.UserProfilePath) does not exist." -ForegroundColor Red
-        }
-    }
-}
+.EXAMPLE
+# Run the script to search for the "RIMS.ID" file:
+.\test-rimsnetworkPath.ps1
 
-# Example usage:
-$userProfilePath = "C:\Users\$env:USERNAME"
-$rimsChecker = [RimsNetworkPathChecker]::new($userProfilePath)
-$rimsChecker.CheckPath()
+# Output:
+# Found RIMS.ID file at: \\server-02.homelab.local\homelab-public\user\JohnDoe.HOMELAB\RIMS.ID
+# <Content of the RIMS.ID file>
+
+# If the file is not found, the script will display messages indicating the search status and locations checked.
 #>
 
 $localUser = $env:USERNAME
