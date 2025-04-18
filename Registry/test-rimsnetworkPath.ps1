@@ -1,22 +1,22 @@
 # Define paths and file name
 
 # Local user name variable
-$localUser = $env:USERNAME
+#$localUser = $env:USERNAME
 
 # Local machine name variable
-$localMachine = $env:COMPUTERNAME
+#$localMachine = $env:COMPUTERNAME
 
 # Network path to search for RIMS.ID file
-$rimsNetPath = "\\server-02.homelab.local\homelab-public\user\$localUser.HOMELAB"
+#$rimsNetPath = "\\server-02.homelab.local\homelab-public\user\$localUser.HOMELAB"
 
 # RIMS.ID file name
 $rimsID = "RIMS.ID"
 
 # RIMS & RIMSMap Registry paths
-$registryPaths = @(
+<#$registryPaths = @(
     @{ Path = "HKLM:\SOFTWARE\WOW6432Node\DAI\RIMS"; AppName = "RIMS" },
     @{ Path = "HKLM:\SOFTWARE\WOW6432Node\DAI\RIMSMap"; AppName = "RIMSMap" }
-)
+)#>
 # Search local host for RIMS.ID file
 $localDrives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
 
