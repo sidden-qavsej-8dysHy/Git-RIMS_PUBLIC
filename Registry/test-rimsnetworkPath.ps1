@@ -74,12 +74,33 @@ if (Test-Path -Path $usernetPath) {
                 Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
                 Get-Content -Path $rimsIdFile.FullName
             } else {
-                Write-Host "RIMS.ID file not found in $localUser's profile path." -ForegroundColor Red
+                Write-Host "RIMS.ID file not found in $localUser's profile path. Searching in C:\..." -ForegroundColor Yellow
+                $rimsIdFile = Get-ChildItem -Path "C:\" -Filter "RIMS.ID" -Recurse -ErrorAction SilentlyContinue
+                if ($rimsIdFile) {
+                    Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
+                    Get-Content -Path $rimsIdFile.FullName
+                } else {
+                    Write-Host "RIMS.ID file not found in C:\." -ForegroundColor Red
+                }
             }
         } else {
-            Write-Host "The path $localUserPath does not exist." -ForegroundColor Red
+            Write-Host "The path $localUserPath does not exist. Searching in C:\..." -ForegroundColor Yellow
+            $rimsIdFile = Get-ChildItem -Path "C:\" -Filter "RIMS.ID" -Recurse -ErrorAction SilentlyContinue
+            if ($rimsIdFile) {
+                Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
+                Get-Content -Path $rimsIdFile.FullName
+            } else {
+                Write-Host "RIMS.ID file not found in C:\." -ForegroundColor Red
+            }
         }
     }
 } else {
-    Write-Host "The path $usernetPath does not exist." -ForegroundColor Red
+    Write-Host "The path $usernetPath does not exist. Searching in C:\..." -ForegroundColor Yellow
+    $rimsIdFile = Get-ChildItem -Path "C:\" -Filter "RIMS.ID" -Recurse -ErrorAction SilentlyContinue
+    if ($rimsIdFile) {
+        Write-Host "Found RIMS.ID file at: $($rimsIdFile.FullName)" -ForegroundColor Cyan
+        Get-Content -Path $rimsIdFile.FullName
+    } else {
+        Write-Host "RIMS.ID file not found in C:\." -ForegroundColor Red
+    }
 }
