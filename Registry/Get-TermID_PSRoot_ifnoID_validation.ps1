@@ -41,7 +41,7 @@ Jose Jimenez
 $hostname = $env:COMPUTERNAME
 
 #RIMS.ID network path
-$rimsnetworkPath = "\\homelab.local\homelab-public\user\user-a.HOMELAB\RIMS.ID"
+#$rimsnetworkPath = "\\homelab.local\homelab-public\user\user-a.HOMELAB\RIMS.ID"
 
 #Registry paths
 $registryPaths = @(
