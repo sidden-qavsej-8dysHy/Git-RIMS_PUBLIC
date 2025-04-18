@@ -24,7 +24,14 @@ foreach ($drive in $localDrives) {
     $filePath = Get-ChildItem -Path $drive -Recurse -Filter $rimsID -ErrorAction SilentlyContinue | Select-Object -First 1
 
     if ($filePath) {
-        Write-Host "Found $rimsID at: $($filePath.FullName)"
+        Write-Host "Found $rimsID at: $($filePath.FullName) (Literal Path: $($filePath.PSPath))" -ForegroundColor Yellow
+        # Display the content of the RIMS.ID file
+        try {
+            $fileContent = Get-Content -Path $filePath.FullName -ErrorAction Stop
+            Write-Host "Filename '${rimsID}' contains TerminalNUmber:" $fileContent
+        } catch {
+            Write-Host "Failed to read the content of $rimsID. Error: $_"
+        }
         break
     }
 }
