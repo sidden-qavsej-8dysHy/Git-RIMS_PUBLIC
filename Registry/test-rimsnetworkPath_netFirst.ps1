@@ -1,10 +1,11 @@
 # Define paths and file name
 
 # Local user name variable
-$localUser = $env:USERNAME
+#$localUser = $env:USERNAME
 
 # Local machine name variable
 #$localMachine = $env:COMPUTERNAME
+$localCDrive = "C:\"
 
 # Network path to search for RIMS.ID file
 #$rimsNetPath = "\\server-02.homelab.local\homelab-public\user\$localUser.HOMELAB"
@@ -13,53 +14,43 @@ $localUser = $env:USERNAME
 $rimsID = "RIMS.ID"
 
 # RIMS & RIMSMap Registry paths
-<#$registryPaths = @(
+$registryPaths = @(
     @{ Path = "HKLM:\SOFTWARE\WOW6432Node\DAI\RIMS"; AppName = "RIMS" },
     @{ Path = "HKLM:\SOFTWARE\WOW6432Node\DAI\RIMSMap"; AppName = "RIMSMap" }
-)#>
+)
 
-#Search network path first
-$rimsNetPath = "\\server-02.homelab.local\homelab-public\user\$localUser.HOMELAB"
+# Search for $rimsID in $localCDrive
 
-if (Test-Path -Path $rimsNetPath) {
-    $networkFilePath = Get-ChildItem -Path $rimsNetPath -Recurse -Filter $rimsID -ErrorAction SilentlyContinue | Select-Object -First 1
+# Search for RIMS.ID in C:\ drive
+Write-Host "Searching for $rimsID in $localCDrive..."
+$rimsFilePath = Get-ChildItem -Path $localCDrive -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $rimsID }
 
-    if ($networkFilePath) {
-        Write-Host "Found $rimsID at: $($networkFilePath.FullName) (Literal Path: $($networkFilePath.PSPath))" -ForegroundColor Green
-        # Display the content of the RIMS.ID file
-        try {
-            $fileContent = Get-Content -Path $networkFilePath.FullName -ErrorAction Stop
-            Write-Host "Filename '${rimsID}' contains TerminalNumber:" $fileContent -ForegroundColor Green
-        } catch {
-            Write-Host "Failed to read the content of $rimsID. Error: $_" -ForegroundColor Green
-        }
-        return
-    } else {
-        Write-Host "$rimsID not found in network path: $rimsNetPath" -ForegroundColor Green
-    }
-Write-Host "Network path $rimsNetPath does not exist or is inaccessible." -ForegroundColor Green
+if ($rimsFilePath) {
+    Write-Host "File found at: $($rimsFilePath.FullName)" -ForegroundColor Yellow
+    Write-Host "Displaying content of $($rimsID):" -ForegroundColor Yellow
+    Get-Content -Path $rimsFilePath.FullName | ForEach-Object { Write-Host $_ -ForegroundColor Green }
 } else {
-    Write-Host "Network path $rimsNetPath does not exist or is inaccessible." -ForegroundColor Green
+    Write-Host "File not found in $localCDrive." -ForegroundColor Red
 }
-# Search local host for RIMS.ID file
-$localDrives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
+# If the file was found, use its content to update TerminalNumber in the registry paths
+if ($rimsFilePath) {
+    $terminalNumber = Get-Content -Path $rimsFilePath.FullName | Select-Object -First 1
 
-foreach ($drive in $localDrives) {
-    $filePath = Get-ChildItem -Path $drive -Recurse -Filter $rimsID -ErrorAction SilentlyContinue | Select-Object -First 1
+    foreach ($registryPath in $registryPaths) {
+        $path = $registryPath.Path
+        $appName = $registryPath.AppName
 
-    if ($filePath) {
-        Write-Host "Found $rimsID at: $($filePath.FullName) (Literal Path: $($filePath.PSPath))" -ForegroundColor Yellow
-        # Display the content of the RIMS.ID file
-        try {
-            $fileContent = Get-Content -Path $filePath.FullName -ErrorAction Stop
-            Write-Host "Filename '${rimsID}' contains TerminalNUmber:" $fileContent -ForegroundColor Yellow
-        } catch {
-            Write-Host "Failed to read the content of $rimsID. Error: $_" -ForegroundColor Yellow
+        Write-Host "Updating TerminalNumber for $appName in $path..." -ForegroundColor Yellow 
+        # Check if the registry path exists
+        if (-not (Test-Path $path)) {
+            Write-Host "Registry path $path does not exist. Skipping update for $appName." -ForegroundColor Red
+            continue
         }
-        break
+        try {
+            Set-ItemProperty -Path $path -Name "TerminalNumber" -Value $terminalNumber -ErrorAction Stop
+            Write-Host "TerminalNumber updated."
+        } catch {
+            Write-Host "Failed to update TerminalNumber in $path. Error: $_"
+        }
     }
-}
-
-if (-not $filePath) {
-    Write-Host "$rimsID not found on local host."
 }
