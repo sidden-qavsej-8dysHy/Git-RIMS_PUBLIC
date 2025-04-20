@@ -36,7 +36,7 @@ The name of the file to search for. This variable must be defined before running
 #>
 
 # Local user name variable
-$localUser = $env:USERNAME
+#$localUser = $env:USERNAME
 
 # Local machine name variable
 #$localMachine = $env:COMPUTERNAME
