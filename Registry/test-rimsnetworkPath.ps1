@@ -29,8 +29,7 @@ The name of the file to search for. This variable must be defined before running
 
 .EXAMPLE
 # Example usage:
-# Define the file name to search for
-$rimsID = "RIMS.ID"
+# Define the file name to search for $rimsID = "RIMS.ID" //this file must be hardcoded in the script
 
 # Run the script
 # This will search for the file named "RIMS.ID" across all local drives and display its content if found.
